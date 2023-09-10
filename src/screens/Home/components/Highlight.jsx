@@ -16,6 +16,7 @@ export const Highlight = () => {
       {HighlightData.map(item => {
         return (
           <View
+          key={item.heading}
             style={{
               width: 300,
               height: "auto",

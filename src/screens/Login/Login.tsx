@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, TextInput, StyleSheet, View, Image, SafeAreaView, TouchableOpacity, PixelRatio, StatusBar, } from 'react-native';
+import { Text, TextInput, StyleSheet, View, Image, SafeAreaView, TouchableOpacity, PixelRatio, StatusBar, ScrollView, } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { axiosInstance } from '../../config';
 import { useState } from 'react';
@@ -91,7 +91,7 @@ export const Login = ({ }) => {
   return (
     <>
       {
-        !currentUser ? <Home /> :
+        currentUser ? <Home /> :
           <>
             <StatusBar backgroundColor='#ffc421' />
             <SafeAreaView style={styles.container} >
@@ -138,6 +138,7 @@ export const Login = ({ }) => {
                 padding: 5
               }} > By continuing, you agree to our Terms of service & Privacy policy </Text>
             </SafeAreaView>
+              
           </>
       }
     </>

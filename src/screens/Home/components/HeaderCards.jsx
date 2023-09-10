@@ -14,6 +14,7 @@ export const HeaderCards = () => {
       {headerData.map(item => {
         return (
           <View
+          key={item.heading}
             style={{
               width: 80,
               height: 120,

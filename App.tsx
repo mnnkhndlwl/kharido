@@ -15,10 +15,12 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Provider } from "react-redux";
 import { store } from './src/redux/store';
 import { useSelector } from "react-redux";
-import { Button, Image, Text } from 'react-native';
+import { Button, Image, Text, View } from 'react-native';
 import {
   MagnifyingGlassIcon
 } from 'react-native-heroicons/outline';
+import { Checkout } from './src/screens/Checkout/Checkout';
+import { AddAddress } from './src/screens/Address/AddAddress';
 // import { PersistGate } from 'redux-persist/integration/react';
 
 const Stack = createNativeStackNavigator();
@@ -42,6 +44,18 @@ function App(): JSX.Element {
             )
           })}
           />
+          <Stack.Screen name="Checkout" component={Checkout} options={({ route }) => ({
+            headerRight: () => (
+              <View>
+                <Text style={{
+                  color:"green",
+                  fontWeight:"bold",
+                  fontSize:15
+                }} >Share</Text>
+              </View>
+            )
+          })} />
+          <Stack.Screen name="Add Address" component={AddAddress} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>

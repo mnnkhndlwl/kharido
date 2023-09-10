@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   ScrollView,
   Text,
@@ -16,117 +16,146 @@ import {
   ArrowsUpDownIcon,
   ChevronDoubleDownIcon,
 } from 'react-native-heroicons/outline';
-import { ProductCard } from './ProductCard';
-import { Footer } from '../../components/Footer';
+import {ProductCard} from './ProductCard';
+import {Footer} from '../../components/Footer';
+import * as Progress from 'react-native-progress';
+import {axiosInstance} from '../../config';
+import {useSelector} from 'react-redux';
 
 export const CategoryProducts = ({route, navigation}) => {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const cartItems = useSelector(state => state.cart);
+
+  useEffect(() => {
+    async function getProducts() {
+      try {
+        setLoading(true);
+        const res = await axiosInstance.get(
+          `/product/category/${route.params.category}`,
+        );
+        setProducts(res.data);
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+      }
+    }
+    getProducts();
+  }, []);
+
   const screenWidth = Dimensions.get('window').width;
 
   return (
     <>
       <StatusBar backgroundColor="white" />
-      <SafeAreaView
-        style={{
-          flexDirection: 'row',
-          marginBottom: false ? 70 : 140
-        }}>
-        <ScrollView
+      {loading ? (
+        <SafeAreaView>
+          <Progress.Circle size={30} color="green" />
+        </SafeAreaView>
+      ) : (
+        <SafeAreaView
           style={{
-            width: screenWidth * 0.2,
-            padding: 5,
-            backgroundColor: 'white',
-          }}
-          contentContainerStyle={{
-            gap: 10,
-          }}>
-          {AllCategoryProducts.map(item => {
-            if (item.category === route.params.category) {
-              return item.products.map(product => {
-                return (
-                  <SidebarCards
-                    name={product.name}
-                    path={product.path}
-                  />
-                );
-              });
-            }
-          })}
-        </ScrollView>
-        <ScrollView
-          style={{
-            width: screenWidth * 0.8,
-            flexDirection: 'column',
-            padding: 2,
+            flexDirection: 'row',
+            marginBottom: cartItems.length !== 0 ? 140 : 70
           }}>
           <ScrollView
-          style={{
-            margin:10
-          }}
+            style={{
+              width: screenWidth * 0.2,
+              padding: 5,
+              backgroundColor: 'white',
+            }}
             contentContainerStyle={{
               gap: 10,
-            }}
-            horizontal>
-            <TouchableOpacity
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: 6,
-                borderRadius: 10,
-                shadowOffset: 40,
-                backgroundColor: 'white',
-              }}>
-              <ArrowsUpDownIcon size="15" color="black" />
-              <Text
-                style={{
-                  marginLeft: 5,
-                  marginRight: 10,
-                }}>
-                Sort
-              </Text>
-              <ChevronDoubleDownIcon size="15" color="black" />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: 10,
-                borderRadius: 10,
-                shadowOffset: 40,
-                backgroundColor: 'white',
-              }}>
-              <Text
-                style={{
-                  marginLeft: 5,
-                  marginRight: 10,
-                }}>
-                Brand
-              </Text>
-              <ChevronDoubleDownIcon size="15" color="black" />
-            </TouchableOpacity>
+            }}>
+            {AllCategoryProducts.map(item => {
+              if (item.category === route.params.category) {
+                return item.products.map(product => {
+                  return (
+                    <SidebarCards key={product.name} name={product.name} path={product.path} />
+                  );
+                });
+              }
+            })}
           </ScrollView>
           <ScrollView
-          contentContainerStyle={{
-            gap:10
-          }}
-            style={{ marginTop: 10 , padding:10}}>
-            <View style={{
-              flexDirection:"row",
-              flexWrap:"wrap",
-              justifyContent:"space-between",
-              gap:10
-            }} >
-             <ProductCard />
-             <ProductCard />
-             <ProductCard />
-             <ProductCard />
-             <ProductCard />
-             <ProductCard />
-            </View>
+            style={{
+              width: screenWidth * 0.8,
+              flexDirection: 'column',
+              padding: 2,
+            }}>
+            <ScrollView
+              style={{
+                margin: 10,
+              }}
+              contentContainerStyle={{
+                gap: 10,
+              }}
+              horizontal>
+              <TouchableOpacity
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: 6,
+                  borderRadius: 10,
+                  shadowOffset: 40,
+                  backgroundColor: 'white',
+                }}>
+                <ArrowsUpDownIcon size="15" color="black" />
+                <Text
+                  style={{
+                    marginLeft: 5,
+                    marginRight: 10,
+                  }}>
+                  Sort
+                </Text>
+                <ChevronDoubleDownIcon size="15" color="black" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: 10,
+                  borderRadius: 10,
+                  shadowOffset: 40,
+                  backgroundColor: 'white',
+                }}>
+                <Text
+                  style={{
+                    marginLeft: 5,
+                    marginRight: 10,
+                  }}>
+                  Brand
+                </Text>
+                <ChevronDoubleDownIcon size="15" color="black" />
+              </TouchableOpacity>
             </ScrollView>
-        </ScrollView>
-      </SafeAreaView>
+            <ScrollView
+              contentContainerStyle={{
+                gap: 10,
+              }}
+              style={{marginTop: 10, padding: 10}}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  flexWrap: 'wrap',
+                  justifyContent: 'space-between',
+                  gap: 10,
+                }}>
+                {products.map(item => {
+                  return (
+                    <ProductCard
+                      key={item._id}
+                      item={item}
+                    />
+                  );
+                })}
+              </View>
+            </ScrollView>
+          </ScrollView>
+        </SafeAreaView>
+      )}
       <Footer />
     </>
   );

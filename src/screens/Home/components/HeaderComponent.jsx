@@ -1,11 +1,8 @@
 import React from 'react';
 import {Text, TextInput, View, Image, TouchableOpacity} from 'react-native';
 import {styles} from '../Styles';
-import {
-  MagnifyingGlassIcon,
-  MicrophoneIcon,
-} from 'react-native-heroicons/outline';
 import { HeaderCards } from './HeaderCards';
+import { SearchBar } from '../../../components/SearchBar';
 
 export const HeaderComponent = () => {
   return (
@@ -26,31 +23,7 @@ export const HeaderComponent = () => {
           </TouchableOpacity>
         </View>
       </View>
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          margin: 10,
-        }}>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            backgroundColor: 'white',
-            flex: 1,
-            padding: 3,
-            borderRadius: 20,
-          }}>
-          <MagnifyingGlassIcon color="black" size="30" />
-          <TextInput
-            placeholder="Search in 'gift items'"
-            keyboardType="default"
-            style={{
-              width: '80%',
-            }}></TextInput>
-          <MicrophoneIcon size="30" color="black" />
-        </View>
-      </View>
+      <SearchBar place={"Search in 'gifts'"} />
       <HeaderCards />
     </View>
   );
