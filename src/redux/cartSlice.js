@@ -27,9 +27,14 @@ export const cartSlice = createSlice({
         state.push(action.payload);
       }
     },
+
+    RESET: state => {
+      // Reset the state to its initial value
+      return initialState;
+    },
   },
 });
 
-export const {ADD_TO_CART} = cartSlice.actions;
+export const {ADD_TO_CART, RESET} = cartSlice.actions;
 
 export default cartSlice.reducer;

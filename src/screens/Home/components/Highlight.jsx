@@ -1,8 +1,12 @@
 import React from 'react';
-import {ScrollView, Text, View, Image, TouchableOpacity} from 'react-native';
+import {ScrollView, Text, View, Image, TouchableOpacity,Dimensions} from 'react-native';
 import {HighlightData} from '../../../constants/HighlightData';
 
 export const Highlight = () => {
+
+  const screenHeight = Dimensions.get('window').height;
+  const screenWidth = Dimensions.get('window').width;
+
   return (
     <ScrollView
       style={{
@@ -18,7 +22,7 @@ export const Highlight = () => {
           <View
           key={item.heading}
             style={{
-              width: 300,
+              width: screenWidth*0.9,
               height: "auto",
               borderRadius: 20,
               backgroundColor: item.backcolor,

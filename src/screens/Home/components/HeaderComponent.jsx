@@ -3,8 +3,12 @@ import {Text, TextInput, View, Image, TouchableOpacity} from 'react-native';
 import {styles} from '../Styles';
 import { HeaderCards } from './HeaderCards';
 import { SearchBar } from '../../../components/SearchBar';
+import { useNavigation } from '@react-navigation/native';
 
 export const HeaderComponent = () => {
+
+  const navigation = useNavigation();
+
   return (
     <View style={styles.headComponent}>
       <View style={styles.top}>
@@ -18,7 +22,9 @@ export const HeaderComponent = () => {
           </Text>
         </View>
         <View>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={()=>{
+            navigation.navigate("Profile");
+          }} >
             <Image source={require('../../../images/account.png')} />
           </TouchableOpacity>
         </View>

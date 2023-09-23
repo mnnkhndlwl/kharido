@@ -1,69 +1,83 @@
 import React from 'react';
-import {useDispatch} from 'react-redux';
-import {ADD_TO_CART} from '../redux/cartSlice';
-import {useSelector} from 'react-redux';
-import {View, Text, TouchableOpacity} from 'react-native';
-import {MinusSmallIcon, PlusSmallIcon} from 'react-native-heroicons/solid';
+import { useDispatch } from 'react-redux';
+import { ADD_TO_CART } from '../redux/cartSlice';
+import { useSelector } from 'react-redux';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { MinusSmallIcon, PlusSmallIcon } from 'react-native-heroicons/solid';
 
-export const QuantityButton = ({item}) => {
+export const QuantityButton = ({ item }) => {
   const dispatch = useDispatch();
   const cartItems = useSelector(state => state.cart);
+
+  const isItemInCart = cartItems.find(i => i._id === item._id);
+  const itemQuantity = isItemInCart ? isItemInCart.quantity : 0;
+
   return (
-    <>
-      {cartItems.find(i => i._id === item._id) ? (
-        <>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              backgroundColor: '#018f14',
-              padding: 3,
-              borderRadius: 5,
-            }}>
-            <TouchableOpacity
-              onPress={() => {
-                dispatch(ADD_TO_CART({...item, quantity: -1}));
-              }}>
-              <MinusSmallIcon size={20} color="white" />
-            </TouchableOpacity>
-            <Text
-              style={{
-                color: 'white',
-                fontWeight: 'bold',
-              }}>
-              {' '}
-              {cartItems.find(i => i._id === item._id).quantity}{' '}
-            </Text>
-            <TouchableOpacity
-              onPress={() => {
-                dispatch(ADD_TO_CART({...item, quantity: 1}));
-              }}>
-              <PlusSmallIcon size={20} color="white" />
-            </TouchableOpacity>
-          </View>
-        </>
+    <View style={styles.container}>
+      {isItemInCart ? (
+        <View style={styles.quantityContainer}>
+          <TouchableOpacity
+            style={styles.iconButton}
+            onPress={() => {
+              dispatch(ADD_TO_CART({ ...item, quantity: -1 }));
+            }}
+          >
+            <MinusSmallIcon size={20} color="white" />
+          </TouchableOpacity>
+          <Text style={styles.quantityText}>{itemQuantity}</Text>
+          <TouchableOpacity
+            style={styles.iconButton}
+            onPress={() => {
+              dispatch(ADD_TO_CART({ ...item, quantity: 1 }));
+            }}
+          >
+            <PlusSmallIcon size={20} color="white" />
+          </TouchableOpacity>
+        </View>
       ) : (
         <TouchableOpacity
-          style={{
-            backgroundColor: '#bbfcc0',
-            paddingVertical: 5,
-            paddingHorizontal: 20,
-            borderRadius: 5,
-            borderColor: 'green',
-            borderWidth: 1,
-          }}
+          style={styles.addButton}
           onPress={() => {
-            dispatch(ADD_TO_CART({...item, quantity: 1}));
-          }}>
-          <Text
-            style={{
-              fontWeight: 'bold',
-              color: 'green',
-            }}>
-            ADD
-          </Text>
+            dispatch(ADD_TO_CART({ ...item, quantity: 1 }));
+          }}
+        >
+          <Text style={styles.addButtonText}>ADD</Text>
         </TouchableOpacity>
       )}
-    </>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  quantityContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#018f14',
+    borderRadius: 5,
+  },
+  iconButton: {
+    padding: 5,
+    borderRadius: 5,
+  },
+  quantityText: {
+    color: 'white',
+    fontWeight: 'bold',
+    paddingHorizontal: 10,
+  },
+  addButton: {
+    backgroundColor: '#bbfcc0',
+    paddingVertical: 5,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    borderColor: 'green',
+    borderWidth: 1,
+  },
+  addButtonText: {
+    fontWeight: 'bold',
+    color: 'green',
+  },
+});

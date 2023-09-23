@@ -16,11 +16,12 @@ import {
   ArrowsUpDownIcon,
   ChevronDoubleDownIcon,
 } from 'react-native-heroicons/outline';
-import {ProductCard} from './ProductCard';
+import {ProductCard} from '../../components/ProductCard';
 import {Footer} from '../../components/Footer';
 import * as Progress from 'react-native-progress';
 import {axiosInstance} from '../../config';
 import {useSelector} from 'react-redux';
+import {Loader} from '../../components/Loader';
 
 export const CategoryProducts = ({route, navigation}) => {
   const [products, setProducts] = useState([]);
@@ -49,14 +50,19 @@ export const CategoryProducts = ({route, navigation}) => {
     <>
       <StatusBar backgroundColor="white" />
       {loading ? (
-        <SafeAreaView>
-          <Progress.Circle size={30} color="green" />
+        <SafeAreaView
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <Loader screenWidth={screenWidth} />
         </SafeAreaView>
       ) : (
         <SafeAreaView
           style={{
             flexDirection: 'row',
-            marginBottom: cartItems.length !== 0 ? 140 : 70
+            marginBottom: cartItems.length !== 0 ? 140 : 70,
           }}>
           <ScrollView
             style={{
@@ -71,7 +77,11 @@ export const CategoryProducts = ({route, navigation}) => {
               if (item.category === route.params.category) {
                 return item.products.map(product => {
                   return (
-                    <SidebarCards key={product.name} name={product.name} path={product.path} />
+                    <SidebarCards
+                      key={product.name}
+                      name={product.name}
+                      path={product.path}
+                    />
                   );
                 });
               }
@@ -133,23 +143,18 @@ export const CategoryProducts = ({route, navigation}) => {
             </ScrollView>
             <ScrollView
               contentContainerStyle={{
-                gap: 10,
+                gap: 2,
               }}
-              style={{marginTop: 10, padding: 10}}>
+              style={{marginTop: 10, padding: 2}}>
               <View
                 style={{
                   flexDirection: 'row',
                   flexWrap: 'wrap',
-                  justifyContent: 'space-between',
-                  gap: 10,
+                  justifyContent: 'space-around',
+                  gap: 2,
                 }}>
                 {products.map(item => {
-                  return (
-                    <ProductCard
-                      key={item._id}
-                      item={item}
-                    />
-                  );
+                  return <ProductCard key={item._id} item={item} />;
                 })}
               </View>
             </ScrollView>

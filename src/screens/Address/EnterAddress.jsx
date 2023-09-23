@@ -13,7 +13,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import axios from 'axios';
 import {useSelector} from 'react-redux';
 import {Loader} from '../../components/Loader';
-import { BASE_URL } from '../../config';
+import {useNavigation} from '@react-navigation/native';
 
 export const EnterAddress = ({show, setShow, latitude, longitude}) => {
   const screenWidth = Dimensions.get('window').width;
@@ -22,6 +22,7 @@ export const EnterAddress = ({show, setShow, latitude, longitude}) => {
   const [type, setType] = useState('home');
   const {currentUser} = useSelector(state => state.user);
   const [loading, setLoading] = useState(false);
+  const navigation = useNavigation();
 
   async function saveAddress() {
     try {
@@ -43,7 +44,7 @@ export const EnterAddress = ({show, setShow, latitude, longitude}) => {
         },
       );
       setLoading(false);
-      console.log(res.data);
+      navigation.navigate('Home');
     } catch (error) {
       setLoading(false);
       console.log(error);

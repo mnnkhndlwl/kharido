@@ -3,7 +3,6 @@ import { Text, TextInput, StyleSheet, View, Image, SafeAreaView, TouchableOpacit
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { axiosInstance } from '../../config';
 import { useState } from 'react';
-import { toast } from 'react-toastify';
 import { useDispatch } from "react-redux";
 import { loginFailure, loginStart, loginSuccess } from '../../redux/userSlice';
 import { useSelector } from "react-redux";
@@ -81,10 +80,10 @@ export const Login = ({ }) => {
       dispatch(loginStart());
       const response = await axiosInstance.post('/customer/login', data);
       dispatch(loginSuccess(response.data));
-      toast.success("login successful");
+      
     } catch (error) {
       dispatch(loginFailure());
-      return toast.error('something went wrong!');
+      
     }
   };
 
