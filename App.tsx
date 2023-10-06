@@ -25,6 +25,9 @@ import { DeliveryScreen } from './src/screens/Delivery/DeliveryScreen';
 import { Profile } from './src/screens/Profile/Profile';
 import { YourOrders } from './src/screens/YourOrders/YourOrders';
 import { Search } from './src/screens/Search/Search';
+import { Wishlist } from './src/screens/Wishlist/Wishlist';
+import { StripeProvider } from '@stripe/stripe-react-native';
+import { pubKey } from './src/constants/environment';
 // import { PersistGate } from 'redux-persist/integration/react';
 
 const Stack = createNativeStackNavigator();
@@ -36,39 +39,42 @@ function App(): JSX.Element {
 
   return (
     <Provider store={store}>
-      <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Screen name="Home" component={Login} options={{ headerShown: false }} />
-          <Stack.Screen name="Category" component={CategoryProducts} options={({ route,navigation }) => ({
-            title: route?.params?.category, headerTitleStyle: {
-              fontSize: 20
-            },
-            headerRight: () => (
-              <MagnifyingGlassIcon color="black" size="30" onPress={() => {
-                navigation.navigate('Search');
-              }} />
-            )
-          })}
-          />
-          <Stack.Screen name="Checkout" component={Checkout} options={({ route }) => ({
-            headerRight: () => (
-              <View>
-                <Text style={{
-                  color: "green",
-                  fontWeight: "bold",
-                  fontSize: 15
-                }} >Share</Text>
-              </View>
-            )
-          })} />
-          <Stack.Screen name="Add Address" component={AddAddress} />
-          <Stack.Screen name="Delivery" component={DeliveryScreen} options={{ headerShown: false }}
-          />
-          <Stack.Screen name="Profile" component={Profile} />
-          <Stack.Screen name="Your Orders" component={YourOrders} />
-          <Stack.Screen name="Search" component={Search} options={{ headerShown: false }} />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <StripeProvider publishableKey={pubKey} >
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen name="Home" component={Login} options={{ headerShown: false }} />
+            <Stack.Screen name="Category" component={CategoryProducts} options={({ route, navigation }) => ({
+              title: route?.params?.category, headerTitleStyle: {
+                fontSize: 20
+              },
+              headerRight: () => (
+                <MagnifyingGlassIcon color="black" size="30" onPress={() => {
+                  navigation.navigate('Search');
+                }} />
+              )
+            })}
+            />
+            <Stack.Screen name="Checkout" component={Checkout} options={({ route }) => ({
+              headerRight: () => (
+                <View>
+                  <Text style={{
+                    color: "green",
+                    fontWeight: "bold",
+                    fontSize: 15
+                  }} >Share</Text>
+                </View>
+              )
+            })} />
+            <Stack.Screen name="Add Address" component={AddAddress} />
+            <Stack.Screen name="Delivery" component={DeliveryScreen} options={{ headerShown: false }}
+            />
+            <Stack.Screen name="Profile" component={Profile} />
+            <Stack.Screen name="Your Orders" component={YourOrders} />
+            <Stack.Screen name="Wishlist" component={Wishlist} />
+            <Stack.Screen name="Search" component={Search} options={{ headerShown: false }} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </StripeProvider>
     </Provider>
   );
 }

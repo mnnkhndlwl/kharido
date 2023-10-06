@@ -100,9 +100,7 @@ export const Login = ({ }) => {
                 }}
               />
               <View style={styles.loginContainer} >
-                <Image style={styles.logo} source={{
-                  uri: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Blinkit-yellow-rounded.svg/512px-Blinkit-yellow-rounded.svg.png",
-                }} />
+                <Image style={styles.logo} source={ require("../../images/logo.png") } />
                 <Text style={styles.mainheading} > India's last minute app </Text>
                 <Text style={styles.dusriheading} > Log in or sign up </Text>
                 <TextInput

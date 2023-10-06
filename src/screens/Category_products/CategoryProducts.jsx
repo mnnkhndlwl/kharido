@@ -22,11 +22,34 @@ import * as Progress from 'react-native-progress';
 import {axiosInstance} from '../../config';
 import {useSelector} from 'react-redux';
 import {Loader} from '../../components/Loader';
+import axios from 'axios';
 
 export const CategoryProducts = ({route, navigation}) => {
   const [products, setProducts] = useState([]);
+  const [subcat, setSubCat] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [wishlist, setWishlist] = useState([]);
   const cartItems = useSelector(state => state.cart);
+  const id = route?.params?.id;
+  const {currentUser} = useSelector(state => state.user);
+
+  async function getWishlist() {
+    try {
+      setLoading(true);
+      const res = await axios.get(`http://localhost:8000/customer/wishlist`, {
+        headers: {
+          Authorization: `Bearer ${currentUser.token}`,
+          // You can also include other headers as needed.
+          'Content-Type': 'application/json',
+        },
+      });
+      setLoading(false);
+      setWishlist(res?.data);
+    } catch (error) {
+      setLoading(false);
+      console.log(error);
+    }
+  }
 
   useEffect(() => {
     async function getProducts() {
@@ -41,6 +64,20 @@ export const CategoryProducts = ({route, navigation}) => {
         setLoading(false);
       }
     }
+
+    async function getCategoryData() {
+      try {
+        setLoading(true);
+        const res = await axiosInstance.get(`/product/get/category/${id}`);
+        setSubCat(res?.data?.subcategory);
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+      }
+    }
+
+    getCategoryData();
+    getWishlist();
     getProducts();
   }, []);
 
@@ -73,18 +110,14 @@ export const CategoryProducts = ({route, navigation}) => {
             contentContainerStyle={{
               gap: 10,
             }}>
-            {AllCategoryProducts.map(item => {
-              if (item.category === route.params.category) {
-                return item.products.map(product => {
-                  return (
-                    <SidebarCards
-                      key={product.name}
-                      name={product.name}
-                      path={product.path}
-                    />
-                  );
-                });
-              }
+            {subcat?.map(item => {
+              return (
+                <SidebarCards
+                  key={item.name}
+                  name={item.name}
+                  path={item?.image?.image_url}
+                />
+              );
             })}
           </ScrollView>
           <ScrollView
@@ -154,7 +187,43 @@ export const CategoryProducts = ({route, navigation}) => {
                   gap: 2,
                 }}>
                 {products.map(item => {
-                  return <ProductCard key={item._id} item={item} />;
+                  return (
+                    <ProductCard
+                      key={item._id}
+                      item={item}
+                      wishlist={wishlist}
+                      onToggleWishlist={async (productId) => {
+                        try {
+                          // Send a request to your server to add/remove the product from the wishlist
+                          const resp = await axios.put(
+                            'http://localhost:8000/product/wishlist',
+                            {
+                              _id: productId,
+                            },
+                            {
+                              headers: {
+                                Authorization: `Bearer ${currentUser.token}`,
+                                // You can also include other headers as needed.
+                                'Content-Type': 'application/json',
+                              },
+                            },
+                          );
+                          // Update the wishlist state on success
+                          if (resp?.data) {
+                            setWishlist([...wishlist, item]);
+                          } else {
+                            setWishlist(
+                              wishlist.filter(
+                                wishlistItem => wishlistItem._id !== productId,
+                              ),
+                            );
+                          }
+                        } catch (error) {
+                          console.log(error?.response);
+                        }
+                      }}
+                    />
+                  );
                 })}
               </View>
             </ScrollView>

@@ -1,12 +1,45 @@
-import React from 'react';
-import { View, Image, Text, StyleSheet } from 'react-native';
-import { ClockIcon } from 'react-native-heroicons/outline';
-import { QuantityButton } from './QuantityButton';
+import React,{useState,useEffect} from 'react';
+import {View, Image, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {ClockIcon} from 'react-native-heroicons/outline';
+import {QuantityButton} from './QuantityButton';
 
-export const ProductCard = ({ item }) => {
+export const ProductCard = ({ item, wishlist, onToggleWishlist }) => {
+  const [isInWishlist, setIsInWishlist] = useState(false);
+
+  useEffect(() => {
+    // Check if the product is in the wishlist
+    setIsInWishlist(wishlist?.some((wishlistItem) => wishlistItem._id === item._id));
+  }, [wishlist, item._id]);
   return (
     <View style={styles.container}>
-      <Image style={styles.image} source={{ uri: item.banner }} />
+      <View
+        style={{
+          position: 'absolute',
+          top: 10,
+          right: 10,
+        }}>
+        <TouchableOpacity
+          onPress={async () => {
+            // Toggle the wishlist status and call the onToggleWishlist function
+            console.log("calling.............");
+            await onToggleWishlist(item._id);
+            setIsInWishlist(!isInWishlist);
+          }}
+        >
+          {isInWishlist ? (
+            <Image
+              style={{ width: 20, height: 20 }}
+              source={require('../images/laldil.png')}
+            />
+          ) : (
+            <Image
+              style={{ width: 20, height: 20 }}
+              source={require('../images/kaladil.png')}
+            />
+          )}
+        </TouchableOpacity>
+      </View>
+      <Image style={styles.image} source={{uri: item.banner}} />
       <View style={styles.infoContainer}>
         <View style={styles.timeContainer}>
           <ClockIcon color="black" size={15} />
@@ -35,7 +68,7 @@ const styles = StyleSheet.create({
   image: {
     height: 100, // Adjust the height as needed
     width: '100%', // Take up 100% width
-    objectFit:"contain"
+    objectFit: 'contain',
   },
   infoContainer: {
     padding: 10,
@@ -67,7 +100,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginTop: 10,
-    gap:10
+    gap: 10,
   },
   price: {
     color: 'black',

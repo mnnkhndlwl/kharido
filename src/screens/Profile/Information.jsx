@@ -8,6 +8,7 @@ import {
   InformationCircleIcon,
   StarIcon,
   PowerIcon,
+  HeartIcon
 } from 'react-native-heroicons/outline';
 import {ChevronRightIcon} from 'react-native-heroicons/solid';
 import {useNavigation} from '@react-navigation/native';
@@ -58,6 +59,13 @@ export const Information = ({screenWidth}) => {
       icon: HomeIcon,
       title: 'Address Book',
       action: () => {},
+    },
+    {
+      icon: HeartIcon,
+      title: 'Your Products Wishlist',
+      action: () => {
+        navigation.navigate('Wishlist');
+      },
     },
   ];
 

@@ -24,7 +24,9 @@ export const SidebarCards = ({ name,path }) => {
           height: 60,
           objectFit: 'contain',
         }}
-        source={path}
+        source={{
+          uri: path
+        }}
       />
 
       <Text

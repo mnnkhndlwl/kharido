@@ -7,6 +7,7 @@ import {
   ScrollView,
   Dimensions,
   Image,
+  Alert
 } from 'react-native';
 import {mapKey} from '../../constants/environment';
 import MapboxGL from '@rnmapbox/maps';
@@ -19,6 +20,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import axios from 'axios';
 import {calculateTotalPrice} from '../../utils/utils';
 import {RESET} from '../../redux/cartSlice';
+import { useStripe } from '@stripe/stripe-react-native';
 
 MapboxGL.setAccessToken(mapKey);
 //MapboxGL.setConnected(true);
@@ -42,6 +44,62 @@ export const DeliveryScreen = () => {
 
   const startCoordinates = [77.11288116671513, 28.73695862131864]; // e.g., 'longitude,latitude'
   const endCoordinates = [address.longitude, address.latitude]; // e.g., 'longitude,latitude'
+  const { initPaymentSheet, presentPaymentSheet } = useStripe();
+  const [error,setError] = useState(false);
+
+  const onCheckout = async () => {
+    // 1. Create a payment intent
+    var response;
+    setLoading(true);
+    try {
+      const resp = await axios.post(
+        `http://localhost:8000/shopping/pay`,
+        {
+          total: total < 99 ? total + 15 : total
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${currentUser.token}`,
+            // You can also include other headers as needed.
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+      response = resp;
+    } catch (error) {
+      console.log(error);
+      setError(false);
+    }
+    if (response.data.message) {
+      Alert.alert('Something went wrong');
+      return;
+    }
+
+    // 2. Initialize the Payment sheet
+    const initResponse = await initPaymentSheet({
+      merchantDisplayName: 'GrowGo',
+      paymentIntentClientSecret: response.data,
+    });
+    if (initResponse.error) {
+      console.log(initResponse.error);
+      Alert.alert('Something went wrong');
+      return;
+    }
+
+    // 3. Present the Payment Sheet from Stripe
+    const paymentResponse = await presentPaymentSheet();
+
+    if (paymentResponse.error) {
+      Alert.alert(
+        `Error code: ${paymentResponse.error.code}`,
+        paymentResponse.error.message
+      );
+      return;
+    }
+
+    // 4. If payment ok -> create the order
+    saveOrder();
+  };
 
   async function saveOrder() {
     try {
@@ -91,7 +149,7 @@ export const DeliveryScreen = () => {
     }
   }
   useEffect(() => {
-    saveOrder();
+    onCheckout();
     fetchRoute();
   }, []);
 
@@ -111,6 +169,16 @@ export const DeliveryScreen = () => {
         </>
       ) : (
         <SafeAreaView>
+        {
+          error ? <>
+          <View style={{
+            flexDirection:'row' ,alignItems:"center",justifyContent:"space-between",flex:1
+          }} >
+          <Text>
+            Some error occured!
+          </Text>
+          </View>
+          </> : 
           <ScrollView>
             <View
               style={{
@@ -192,6 +260,7 @@ export const DeliveryScreen = () => {
               <Orders data={result} />
             </View>
           </ScrollView>
+        }
         </SafeAreaView>
       )}
     </>

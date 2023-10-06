@@ -1,12 +1,16 @@
-import React,{useEffect} from 'react';
+import React, {useEffect} from 'react';
 import {
   MagnifyingGlassIcon,
   MicrophoneIcon,
 } from 'react-native-heroicons/outline';
-import {View, TextInput} from 'react-native';
+import {View, TextInput, TouchableOpacity} from 'react-native';
 import axios from 'axios';
 
 export const Bar = ({
+  isRecording,
+  setIsRecording,
+  startRecording,
+  stopRecording,
   searchQuery,
   setSearchQuery,
   setLoading,
@@ -32,9 +36,9 @@ export const Bar = ({
     handleSearch();
   }, [searchQuery]);
 
-  useEffect(()=>{
+  useEffect(() => {
     setSearchQuery('');
-  },[])
+  }, []);
 
   return (
     <View
@@ -62,7 +66,10 @@ export const Bar = ({
           value={searchQuery}
           onChangeText={text => setSearchQuery(text)}
         />
-        <MicrophoneIcon size="20" color="black" />
+        <TouchableOpacity
+          onPress={() => (startRecording())}>
+          <MicrophoneIcon size="20" color="black" />
+        </TouchableOpacity>
       </View>
     </View>
   );

@@ -1,50 +1,60 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
-import { ADD_TO_CART } from '../redux/cartSlice';
-import { useSelector } from 'react-redux';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { MinusSmallIcon, PlusSmallIcon } from 'react-native-heroicons/solid';
+import {useDispatch} from 'react-redux';
+import {ADD_TO_CART} from '../redux/cartSlice';
+import {useSelector} from 'react-redux';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Dimensions,
+  SafeAreaView,
+} from 'react-native';
+import {MinusSmallIcon, PlusSmallIcon} from 'react-native-heroicons/solid';
 
-export const QuantityButton = ({ item }) => {
+export const QuantityButton = ({item}) => {
   const dispatch = useDispatch();
   const cartItems = useSelector(state => state.cart);
+  const screenWidth = Dimensions.get('window').width;
 
   const isItemInCart = cartItems.find(i => i._id === item._id);
   const itemQuantity = isItemInCart ? isItemInCart.quantity : 0;
 
   return (
-    <View style={styles.container}>
-      {isItemInCart ? (
-        <View style={styles.quantityContainer}>
+    <SafeAreaView style={{
+      width:screenWidth*0.5,
+      height:"max-content"
+    }} >
+      <View style={styles.container}>
+        {isItemInCart ? (
+          <View style={styles.quantityContainer}>
+            <TouchableOpacity
+              style={styles.iconButton}
+              onPress={() => {
+                dispatch(ADD_TO_CART({...item, quantity: -1}));
+              }}>
+              <MinusSmallIcon size={12} color="white" />
+            </TouchableOpacity>
+            <Text style={styles.quantityText}>{itemQuantity}</Text>
+            <TouchableOpacity
+              style={styles.iconButton}
+              onPress={() => {
+                dispatch(ADD_TO_CART({...item, quantity: 1}));
+              }}>
+              <PlusSmallIcon size={12} color="white" />
+            </TouchableOpacity>
+          </View>
+        ) : (
           <TouchableOpacity
-            style={styles.iconButton}
+            style={styles.addButton}
             onPress={() => {
-              dispatch(ADD_TO_CART({ ...item, quantity: -1 }));
-            }}
-          >
-            <MinusSmallIcon size={20} color="white" />
+              dispatch(ADD_TO_CART({...item, quantity: 1}));
+            }}>
+            <Text style={styles.addButtonText}>ADD</Text>
           </TouchableOpacity>
-          <Text style={styles.quantityText}>{itemQuantity}</Text>
-          <TouchableOpacity
-            style={styles.iconButton}
-            onPress={() => {
-              dispatch(ADD_TO_CART({ ...item, quantity: 1 }));
-            }}
-          >
-            <PlusSmallIcon size={20} color="white" />
-          </TouchableOpacity>
-        </View>
-      ) : (
-        <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => {
-            dispatch(ADD_TO_CART({ ...item, quantity: 1 }));
-          }}
-        >
-          <Text style={styles.addButtonText}>ADD</Text>
-        </TouchableOpacity>
-      )}
-    </View>
+        )}
+      </View>
+    </SafeAreaView>
   );
 };
 
