@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, TextInput, StyleSheet, View, Image, SafeAreaView, TouchableOpacity, PixelRatio, StatusBar, ScrollView, } from 'react-native';
+import { Text, TextInput, StyleSheet, View, Image, SafeAreaView, TouchableOpacity, PixelRatio, StatusBar,ToastAndroid, Dimensions } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { axiosInstance } from '../../config';
 import { useState } from 'react';
@@ -15,6 +15,7 @@ const styles = StyleSheet.create({
   },
   pic: {
     flex: 0.5,
+    objectFit:"cover"
   },
   loginContainer: {
     flex: 0.5,
@@ -27,7 +28,8 @@ const styles = StyleSheet.create({
     width: "20%",
     height: "20%",
     marginTop: PixelRatio.getPixelSizeForLayoutSize(5),
-    objectFit: "contain"
+    objectFit: "contain",
+    borderRadius:10
   },
   input: {
     height: 40,
@@ -64,26 +66,36 @@ const styles = StyleSheet.create({
 });
 
 export const Login = ({ }) => {
-
+  const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state: any) => state.user);
+  console.log(currentUser);
+  const screenWidth = Dimensions.get('window').width;
 
   const handleLogin = async () => {
     try {
-
+      setLoading(true);
       const data = {
         email: email,
         password: password,
       };
       dispatch(loginStart());
       const response = await axiosInstance.post('/customer/login', data);
+      if (response.data.message) {
+        setLoading(false);
+        ToastAndroid.show('Authentication failed !', ToastAndroid.SHORT);
+        dispatch(loginFailure());
+        return;
+      }
       dispatch(loginSuccess(response.data));
-      
+      ToastAndroid.show('Authentication Success !', ToastAndroid.SHORT);
+      setLoading(false);
     } catch (error) {
       dispatch(loginFailure());
-      
+      ToastAndroid.show('Authentication failed !', ToastAndroid.SHORT);
+      setLoading(false);
     }
   };
 
@@ -92,15 +104,16 @@ export const Login = ({ }) => {
       {
         currentUser ? <Home /> :
           <>
-            <StatusBar backgroundColor='#ffc421' />
+            <StatusBar backgroundColor='#ecfa23' barStyle={'dark-content'} />
+
             <SafeAreaView style={styles.container} >
               <Image style={styles.pic}
                 source={{
-                  uri: 'https://www.businessoutreach.in/wp-content/uploads/2022/12/success-story-of-Blinkit.png',
+                  uri: 'https://i.postimg.cc/Hkd3yCBN/bg.png',
                 }}
               />
               <View style={styles.loginContainer} >
-                <Image style={styles.logo} source={ require("../../images/logo.png") } />
+                <Image style={styles.logo} source={require("../../images/logo.png")} />
                 <Text style={styles.mainheading} > India's last minute app </Text>
                 <Text style={styles.dusriheading} > Log in or sign up </Text>
                 <TextInput
@@ -116,17 +129,18 @@ export const Login = ({ }) => {
                   secureTextEntry={true}
                   placeholder="Enter your password"
                 />
-                <TouchableOpacity
-                  onPress={handleLogin}
-                  style={styles.button}
-                >
-                  <Text style={
-                    {
-                      color: "white",
-                      fontWeight: "bold",
-                    }
-                  } >Continue</Text>
-                </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={handleLogin}
+                    style={styles.button}
+                  >
+                    <Text style={
+                      {
+                        color: "white",
+                        fontWeight: "bold",
+                      }
+                    } >Continue</Text>
+                  </TouchableOpacity>
+                
               </View>
               <Text style={{
                 backgroundColor: "#d3d3d3",
@@ -135,7 +149,8 @@ export const Login = ({ }) => {
                 padding: 5
               }} > By continuing, you agree to our Terms of service & Privacy policy </Text>
             </SafeAreaView>
-              
+
+
           </>
       }
     </>

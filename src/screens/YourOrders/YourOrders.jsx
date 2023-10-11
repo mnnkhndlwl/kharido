@@ -1,10 +1,13 @@
 import React, {useState, useEffect} from 'react';
-import {View, ScrollView, Dimensions, Text} from 'react-native';
+import {View, ScrollView, Dimensions, Text,ToastAndroid } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useSelector} from 'react-redux';
 import axios from 'axios';
 import {Loader} from '../../components/Loader';
 import { formatDate } from '../../utils/utils';
+import {useNavigation} from '@react-navigation/native';
+import { useDispatch } from "react-redux";
+import { logout } from '../../redux/userSlice';
 
 export const YourOrders = () => {
   const screenWidth = Dimensions.get('window').width;
@@ -12,6 +15,8 @@ export const YourOrders = () => {
   const {currentUser} = useSelector(state => state.user);
   const [result, setResult] = useState([]);
   const [loading, setLoading] = useState(false);
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   async function getOrders() {
     try {
@@ -23,6 +28,12 @@ export const YourOrders = () => {
           'Content-Type': 'application/json',
         },
       });
+      if(res.data.message === 'Not Authorized') {
+        dispatch(logout());
+        setLoading(false);
+          ToastAndroid.show('Your Session has been expired !', ToastAndroid.SHORT);
+          navigation.navigate('Home');
+      }
       setLoading(false);
       setResult(res?.data);
     } catch (error) {

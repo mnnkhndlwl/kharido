@@ -22,8 +22,8 @@ export const QuantityButton = ({item}) => {
 
   return (
     <SafeAreaView style={{
-      width:screenWidth*0.5,
-      height:"max-content"
+      // width:screenWidth*0.5,
+      // height:"max-content"
     }} >
       <View style={styles.container}>
         {isItemInCart ? (
@@ -33,7 +33,7 @@ export const QuantityButton = ({item}) => {
               onPress={() => {
                 dispatch(ADD_TO_CART({...item, quantity: -1}));
               }}>
-              <MinusSmallIcon size={12} color="white" />
+              <MinusSmallIcon size={10} color="white" />
             </TouchableOpacity>
             <Text style={styles.quantityText}>{itemQuantity}</Text>
             <TouchableOpacity
@@ -41,7 +41,7 @@ export const QuantityButton = ({item}) => {
               onPress={() => {
                 dispatch(ADD_TO_CART({...item, quantity: 1}));
               }}>
-              <PlusSmallIcon size={12} color="white" />
+              <PlusSmallIcon size={10} color="white" />
             </TouchableOpacity>
           </View>
         ) : (

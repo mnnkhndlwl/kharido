@@ -1,11 +1,7 @@
 import React from 'react';
-import {
-    Text,
-    View,
-    Image,
-  } from 'react-native';
+import {Text, View, Image} from 'react-native';
 
-export const SidebarCards = ({ name,path }) => {
+export const SidebarCards = ({name, path, active}) => {
   return (
     <View
       style={{
@@ -15,7 +11,8 @@ export const SidebarCards = ({ name,path }) => {
         height: 'min-content',
         padding: 3,
         alignSelf: 'center',
-        backgroundColor: '#afeded',
+        backgroundColor: active === name ? '#afeded' : 'white',
+        // backgroundColor: '#afeded',
       }}
       key={name}>
       <Image
@@ -25,7 +22,7 @@ export const SidebarCards = ({ name,path }) => {
           objectFit: 'contain',
         }}
         source={{
-          uri: path
+          uri: path,
         }}
       />
 
@@ -33,7 +30,7 @@ export const SidebarCards = ({ name,path }) => {
         style={{
           fontWeight: 'bold',
           fontSize: 15,
-          color:"black",
+          color: 'black',
           alignSelf: 'center',
           textAlign: 'center',
         }}>

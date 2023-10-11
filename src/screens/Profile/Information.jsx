@@ -1,6 +1,6 @@
-import React from 'react';
+import React,{useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {View, Text, FlatList, TouchableOpacity} from 'react-native';
+import {View, Text, FlatList, TouchableOpacity,ToastAndroid } from 'react-native';
 import {
   ShoppingBagIcon,
   HomeIcon,
@@ -12,6 +12,8 @@ import {
 } from 'react-native-heroicons/outline';
 import {ChevronRightIcon} from 'react-native-heroicons/solid';
 import {useNavigation} from '@react-navigation/native';
+import { useDispatch } from "react-redux";
+import { logout } from '../../redux/userSlice';
 
 const Item = ({data}) => (
   <TouchableOpacity onPress={data.action}>
@@ -46,6 +48,7 @@ const Item = ({data}) => (
 
 export const Information = ({screenWidth}) => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   const DATA = [
     {
@@ -88,7 +91,15 @@ export const Information = ({screenWidth}) => {
     {
       icon: PowerIcon,
       title: 'Logout',
-      action: () => {},
+      action: () => {
+        try {
+          dispatch(logout());
+          ToastAndroid.show('Logout Success !', ToastAndroid.SHORT);
+          navigation.navigate('Home');
+        } catch(e) {
+          console.log(e);
+        }
+      },
     },
   ];
 

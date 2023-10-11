@@ -15,6 +15,8 @@ import {SidebarCards} from './SidebarCards';
 import {
   ArrowsUpDownIcon,
   ChevronDoubleDownIcon,
+  ChevronDoubleUpIcon,
+  XCircleIcon,
 } from 'react-native-heroicons/outline';
 import {ProductCard} from '../../components/ProductCard';
 import {Footer} from '../../components/Footer';
@@ -32,6 +34,33 @@ export const CategoryProducts = ({route, navigation}) => {
   const cartItems = useSelector(state => state.cart);
   const id = route?.params?.id;
   const {currentUser} = useSelector(state => state.user);
+  const [sortBy, setSortBy] = useState(true);
+  const [selectedSubcategory, setSelectedSubcategory] = useState(null);
+  const [originalProducts, setOriginalProducts] = useState([]);
+
+  const handleSubcategoryClick = subcategoryName => {
+    setSelectedSubcategory(subcategoryName);
+
+    // Filter products based on the selected subcategory
+    const filteredProducts = products.filter(product => {
+      return product.subcategory === subcategoryName;
+    });
+
+    setProducts(filteredProducts);
+  };
+
+  const handleSort = method => {
+    setSortBy(method);
+    let sortedItems = [...products]; // Create a copy of products to avoid modifying the original data
+
+    if (method === true) {
+      sortedItems.sort((a, b) => a.price - b.price); // Sort by ascending price
+    } else if (method === false) {
+      sortedItems.sort((a, b) => b.price - a.price); // Sort by descending price
+    }
+
+    setProducts(sortedItems);
+  };
 
   async function getWishlist() {
     try {
@@ -59,6 +88,7 @@ export const CategoryProducts = ({route, navigation}) => {
           `/product/category/${route.params.category}`,
         );
         setProducts(res.data);
+        setOriginalProducts(res.data);
         setLoading(false);
       } catch (error) {
         setLoading(false);
@@ -75,11 +105,17 @@ export const CategoryProducts = ({route, navigation}) => {
         setLoading(false);
       }
     }
-
+    setSelectedSubcategory(null);
     getCategoryData();
     getWishlist();
     getProducts();
   }, []);
+
+  const clearSubcategoryFilter = () => {
+    setSelectedSubcategory(null);
+    // Reset the products to the original list
+    setProducts([...originalProducts]);
+  };
 
   const screenWidth = Dimensions.get('window').width;
 
@@ -112,11 +148,15 @@ export const CategoryProducts = ({route, navigation}) => {
             }}>
             {subcat?.map(item => {
               return (
-                <SidebarCards
-                  key={item.name}
-                  name={item.name}
-                  path={item?.image?.image_url}
-                />
+                <TouchableOpacity
+                  onPress={() => handleSubcategoryClick(item.name)}>
+                  <SidebarCards
+                    key={item.name}
+                    name={item.name}
+                    path={item?.image?.image_url}
+                    active={selectedSubcategory}
+                  />
+                </TouchableOpacity>
               );
             })}
           </ScrollView>
@@ -134,26 +174,51 @@ export const CategoryProducts = ({route, navigation}) => {
                 gap: 10,
               }}
               horizontal>
-              <TouchableOpacity
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  padding: 6,
-                  borderRadius: 10,
-                  shadowOffset: 40,
-                  backgroundColor: 'white',
-                }}>
-                <ArrowsUpDownIcon size="15" color="black" />
-                <Text
+              {sortBy === true ? (
+                <TouchableOpacity
+                  onPress={() => handleSort(false)}
                   style={{
-                    marginLeft: 5,
-                    marginRight: 10,
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: 6,
+                    borderRadius: 10,
+                    shadowOffset: 40,
+                    backgroundColor: 'white',
                   }}>
-                  Sort
-                </Text>
-                <ChevronDoubleDownIcon size="15" color="black" />
-              </TouchableOpacity>
+                  <ArrowsUpDownIcon size="15" color="black" />
+                  <Text
+                    style={{
+                      marginLeft: 5,
+                      marginRight: 10,
+                    }}>
+                    Sort
+                  </Text>
+                  <ChevronDoubleDownIcon size="15" color="black" />
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  onPress={() => handleSort(true)}
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: 6,
+                    borderRadius: 10,
+                    shadowOffset: 40,
+                    backgroundColor: 'white',
+                  }}>
+                  <ArrowsUpDownIcon size="15" color="black" />
+                  <Text
+                    style={{
+                      marginLeft: 5,
+                      marginRight: 10,
+                    }}>
+                    Sort
+                  </Text>
+                  <ChevronDoubleUpIcon size="15" color="black" />
+                </TouchableOpacity>
+              )}
               <TouchableOpacity
                 style={{
                   flexDirection: 'row',
@@ -173,6 +238,28 @@ export const CategoryProducts = ({route, navigation}) => {
                 </Text>
                 <ChevronDoubleDownIcon size="15" color="black" />
               </TouchableOpacity>
+              {selectedSubcategory && (
+                <TouchableOpacity
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: 10,
+                    borderRadius: 10,
+                    shadowOffset: 40,
+                    backgroundColor: 'white',
+                  }}
+                  onPress={clearSubcategoryFilter}>
+                  <Text
+                    style={{
+                      marginLeft: 5,
+                      marginRight: 10,
+                    }}>
+                    Clear Filter
+                  </Text>
+                  <XCircleIcon size="15" color="black" />
+                </TouchableOpacity>
+              )}
             </ScrollView>
             <ScrollView
               contentContainerStyle={{
@@ -192,7 +279,7 @@ export const CategoryProducts = ({route, navigation}) => {
                       key={item._id}
                       item={item}
                       wishlist={wishlist}
-                      onToggleWishlist={async (productId) => {
+                      onToggleWishlist={async productId => {
                         try {
                           // Send a request to your server to add/remove the product from the wishlist
                           const resp = await axios.put(

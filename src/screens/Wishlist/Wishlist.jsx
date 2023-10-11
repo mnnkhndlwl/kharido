@@ -5,6 +5,9 @@ import {Loader} from '../../components/Loader';
 import axios from 'axios';
 import {ProductCard} from '../../components/ProductCard';
 import {useSelector} from 'react-redux';
+import {useNavigation} from '@react-navigation/native';
+import {useDispatch} from 'react-redux';
+import {logout} from '../../redux/userSlice';
 
 export const Wishlist = () => {
   const [loading, setLoading] = useState(false);
@@ -12,6 +15,8 @@ export const Wishlist = () => {
   const {currentUser} = useSelector(state => state.user);
   const screenWidth = Dimensions.get('window').width;
   const screenHeight = Dimensions.get('window').height;
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   async function getWishlist() {
     try {
@@ -23,6 +28,15 @@ export const Wishlist = () => {
           'Content-Type': 'application/json',
         },
       });
+      if (res.data.message === 'Not Authorized') {
+        dispatch(logout());
+        setLoading(false);
+        ToastAndroid.show(
+          'Your Session has been expired !',
+          ToastAndroid.SHORT,
+        );
+        navigation.navigate('Home');
+      }
       setLoading(false);
       console.log('-------------------Wishlist-------------------------');
       console.log(res?.data);

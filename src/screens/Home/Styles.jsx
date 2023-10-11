@@ -7,7 +7,8 @@ export const styles = StyleSheet.create({
     },
     headComponent : {
         height: 320,
-        backgroundColor: "#f01f1f",
+       backgroundColor: "red",
+       // backgroundColor: "#f01f1f",
         borderBottomLeftRadius: 30,
         borderBottomRightRadius: 30,
     },

@@ -21,6 +21,8 @@ import axios from 'axios';
 import {calculateTotalPrice} from '../../utils/utils';
 import {RESET} from '../../redux/cartSlice';
 import { useStripe } from '@stripe/stripe-react-native';
+import {useNavigation} from '@react-navigation/native';
+import { logout } from '../../redux/userSlice';
 
 MapboxGL.setAccessToken(mapKey);
 //MapboxGL.setConnected(true);
@@ -38,6 +40,8 @@ export const DeliveryScreen = () => {
   const cartItems = useSelector(state => state.cart);
   const total = calculateTotalPrice(cartItems);
   const [result, setResult] = useState([]);
+  const navigation = useNavigation();
+ // const dispatch = useDispatch();
 
   const [fuck, setFuck] = useState([]);
   var ans = [];
@@ -65,6 +69,15 @@ export const DeliveryScreen = () => {
           },
         },
       );
+      if (resp?.data?.message === 'Not Authorized') {
+        dispatch(logout());
+        setLoading(false);
+        ToastAndroid.show(
+          'Your Session has been expired !',
+          ToastAndroid.SHORT,
+        );
+        navigation.navigate('Home');
+      }
       response = resp;
     } catch (error) {
       console.log(error);
@@ -78,7 +91,8 @@ export const DeliveryScreen = () => {
     // 2. Initialize the Payment sheet
     const initResponse = await initPaymentSheet({
       merchantDisplayName: 'GrowGo',
-      paymentIntentClientSecret: response.data,
+      paymentIntentClientSecret: response.data.client_secret,
+      googlePay:true
     });
     if (initResponse.error) {
       console.log(initResponse.error);
@@ -98,15 +112,16 @@ export const DeliveryScreen = () => {
     }
 
     // 4. If payment ok -> create the order
-    saveOrder();
+    saveOrder(response.data.id);
   };
 
-  async function saveOrder() {
+  async function saveOrder(id) {
     try {
       setLoading(true);
       const res = await axios.post(
         `http://localhost:8000/shopping/order`,
         {
+          transaction: id,
           products: cartItems,
           total: total < 99 ? total + 15 : total,
           address: address,
