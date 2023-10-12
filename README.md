@@ -60,7 +60,7 @@
 
 <!-- ------------------------------------------------------------------------------------------------------------------------------------------------------------- -->
 
-https://github.com/mnnkhndlwl/kharido/assets/75252077/f4769d90-df14-4ee7-874d-13fbeea6eaee
+https://github.com/mnnkhndlwl/kharido/assets/75252077/3af07156-3c4b-4d9e-b093-87bd7400fe31
 
 # ![image](https://github.com/mnnkhndlwl/kharido/assets/75252077/485bd53f-ae23-4962-90a7-c726a614b48e)
 # ![image](https://github.com/mnnkhndlwl/kharido/assets/75252077/e1888f3b-0dfb-444c-874e-b503df77e25f)
