@@ -72,6 +72,7 @@ Before running the project, make sure you have the following installed:
 - Node.js (v18 or higher)
 - Docker & Docker Compose
 - MongoDB (if running without Docker)
+- CloudAMQP account (for RabbitMQ message queuing)
 
 # For Frontend (React Native)
 - Node.js (v18 or higher)
@@ -101,33 +102,57 @@ Before running the project, make sure you have the following installed:
    touch shopping/.env
    ```
 
-3. **Configure environment variables**
+3. **Set up RabbitMQ with CloudAMQP**
+
+   The project uses RabbitMQ for message queuing between microservices. Follow these steps to set up CloudAMQP:
+
+   a. **Create CloudAMQP account**:
+
+   - Go to [CloudAMQP](https://cloudamqp.com/)
+   - Sign up for a free account
+   - Create a new instance (select "Little Lemur" for free tier)
+   - Note down the AMQP URL from your instance dashboard
+
+   b. **Get your CloudAMQP URL**:
+
+   - In your CloudAMQP dashboard, copy the AMQP URL
+   - It should look like: `amqps://username:password@host/vhost`
+
+4. **Configure environment variables**
 
    ```bash
    # Add the following to each .env file:
    # customer/.env
    DB_URL=mongodb://localhost:27017/customer_db
+   MONGODB_URI=mongodb://localhost:27017/customer_db
    APP_SECRET=your_secret_key
    PORT=8001
+   MSG_QUEUE_URL=amqps://your-cloudamqp-url
 
    # products/.env
    DB_URL=mongodb://localhost:27017/products_db
+   MONGODB_URI=mongodb://localhost:27017/products_db
    APP_SECRET=your_secret_key
    PORT=8002
+   MSG_QUEUE_URL=amqps://your-cloudamqp-url
 
    # shopping/.env
    DB_URL=mongodb://localhost:27017/shopping_db
+   MONGODB_URI=mongodb://localhost:27017/shopping_db
    APP_SECRET=your_secret_key
    PORT=8003
+   MSG_QUEUE_URL=amqps://your-cloudamqp-url
    ```
 
-4. **Start services with Docker Compose**
+   **Note**: Replace `your-cloudamqp-url` with your actual CloudAMQP AMQP URL from step 3.
+
+5. **Start services with Docker Compose**
 
    ```bash
    docker-compose up --build
    ```
 
-5. **Access the services**
+6. **Access the services**
    - Customer Service: `http://localhost:8001`
    - Products Service: `http://localhost:8002`
    - Shopping Service: `http://localhost:8003`
@@ -135,7 +160,11 @@ Before running the project, make sure you have the following installed:
 
 #### Option 2: Manual Setup
 
-1. **Start each service individually**
+1. **Set up RabbitMQ with CloudAMQP** (same as Option 1, steps 3a-3b)
+
+2. **Configure environment variables** (same as Option 1, step 4)
+
+3. **Start each service individually**
 
    ```bash
    # Terminal 1 - Customer Service
@@ -204,6 +233,7 @@ Before running the project, make sure you have the following installed:
 - **Backend**: Services will automatically restart when you make changes (using nodemon)
 - **Frontend**: Metro bundler supports hot reloading
 - **Database**: Make sure MongoDB is running if not using Docker
+- **RabbitMQ**: Used for inter-service communication. CloudAMQP provides a free tier for development
 - **API Testing**: Use tools like Postman to test backend endpoints
 
 ### Common Issues & Solutions
@@ -212,6 +242,7 @@ Before running the project, make sure you have the following installed:
 2. **Android build issues**: Clean build with `cd android && ./gradlew clean`
 3. **iOS build issues**: Clean build folder in Xcode
 4. **Docker issues**: Make sure Docker is running and ports are not occupied
+5. **RabbitMQ connection issues**: Verify your CloudAMQP URL is correct and the service is running
 
 ### Project Structure
 
