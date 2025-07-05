@@ -1,0 +1,53 @@
+version: "3"
+services:
+  products:
+    build:
+      dockerfile: Dockerfile
+      context: ./products
+    container_name: products
+    ports:
+      - "8002:8002"
+    restart: always
+    volumes:
+      - .:/app
+      - /app/products/node_modules
+
+    env_file:
+      - ./products/.env
+  shopping:
+    build:
+      dockerfile: Dockerfile
+      context: ./shopping
+    container_name: shopping
+    ports:
+      - "8003:8003"
+    restart: always
+    volumes:
+      - .:/app
+      - /app/shopping/node_modules
+    env_file:
+      - ./shopping/.env
+  customer:
+    build:
+      dockerfile: Dockerfile
+      context: ./customer
+    container_name: customer
+    ports:
+      - "8001:8001"
+    restart: always
+
+    volumes:
+      - .:/app/
+      - /app/customer/node_modules
+    env_file:
+      - ./customer/.env
+  nginx-proxy:
+    build:
+      dockerfile: Dockerfile
+      context: ./proxy
+    depends_on:
+      - products
+      - shopping
+      - customer
+    ports:
+      - 80:80
